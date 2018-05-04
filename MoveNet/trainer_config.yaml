@@ -1,0 +1,39 @@
+default:
+    trainer: ppo
+    batch_size: 4000
+    beta: 1.0e-4
+    buffer_size: 16000
+    epsilon: 0.2
+    gamma: 0.995
+    hidden_units: 164
+    lambd: 0.93
+    learning_rate: 1.0e-3
+    max_steps: 2.0e7
+    memory_size: 256
+    normalize: true
+    num_epoch: 8
+    num_layers: 3
+    time_horizon: 64
+    sequence_length: 64
+    summary_freq: 2500
+    use_recurrent: false
+
+Brain2:
+    trainer: ppo
+    batch_size: 5000
+    beta: 1.0e-4
+    buffer_size: 15000
+    epsilon: 0.2
+    gamma: 0.995
+    hidden_units: 196
+    lambd: 0.93
+    learning_rate: 1.0e-3
+    max_steps: 2.0e7
+    memory_size: 256
+    normalize: true
+    num_epoch: 10
+    num_layers: 3
+    time_horizon: 64
+    sequence_length: 64
+    summary_freq: 2500
+    use_recurrent: false

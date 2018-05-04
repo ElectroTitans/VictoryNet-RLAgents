@@ -1,0 +1,1 @@
+python learn.py ../../VictoryNet-Sim/builds/MoveNet1/MoveNet1.exe --run-id=v1 --seed=254 --train --load
