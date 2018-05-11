@@ -1,0 +1,6 @@
+model_version: v4
+model_edit: 01
+model_run: A
+learning_rate: 0.008
+batch_size: 32
+epoch: 30
