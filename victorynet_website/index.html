@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
+        crossorigin="anonymous">
+
+    <title>Victory Net</title>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>VictoryNet Training Dashboard</h1>
+
+        <div class="card" id="latest-model">
+            <div class="card-body">
+                <h3 class="card-title">Latest Model
+                    <span class="badge badge-primary">{{ modelStatus }}</span>
+                </h3>
+                <p>Mode: {{modelName}}</p>
+                <p>Date: {{modelDate}}</p>
+                <p>Training Size: {{modelTrainingSize}}</p>
+                <p>Testing Size: {{modelTestingSize}}</p>
+                <br/>
+
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Epoch</h5>
+                                {{ modelEpoch }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Loss</h5>
+                                {{ modelLoss }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Validation Loss</h5>
+                                {{ modelValLoss }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr/>
+
+                <h5>Model Setting</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Setting</th>
+                            <th scope="col">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Epochs</td>
+                            <td>{{modelCfgEpochs}}</td>
+                        </tr>
+                        <tr>
+                            <td>Learning Rate</td>
+                            <td>{{modelCfgLearningRate}}</td>
+                        </tr>
+                        <tr>
+                            <td>Batch Size</td>
+                            <td>{{modelCfgBatchSize}}</td>
+                        </tr>
+                        <tr>
+                            <td>Conv 1 Filter</td>
+                            <td>{{modelCfgConv1Filter}}</td>
+                        </tr>
+                        <tr>
+                            <td>Conv 1 Kernal </td>
+                            <td>{{modelCfgConv1Kernal}}</td>
+                        </tr>
+                        <tr>
+                            <td>Conv 2 Filter</td>
+                            <td>{{modelCfgConv2Filter}}</td>
+                        </tr>
+                        <tr>
+                            <td>Conv 2 Kernal</td>
+                            <td>{{modelCfgConv2Kernal}}</td>
+                        </tr>
+                        <tr>
+                            <td>Fully Connected Layer</td>
+                            <td>{{modelCfgFullyConnected}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h5>Enviroment Settings</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Setting</th>
+                            <th scope="col">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Spin Mode</td>
+                            <td>{{modelEnvAutoupdate}}</td>
+                        </tr>
+                        <tr>
+                            <td>Lidar Points</td>
+                            <td>{{modelEnvLidarPoints}}</td>
+                        </tr>
+                        <tr>
+                            <td>Lidar Noise</td>
+                            <td>{{modelEnvLidarNoise * 100}}%</td>
+                        </tr>
+                        <tr>
+                            <td>Lidar Failure Rate</td>
+                            <td>{{modelEnvLidarFailure * 100}}%</td>
+                        </tr>
+                        <tr>
+                            <td>Lidar Max Range</td>
+                            <td>{{modelEnvLidarMaxRange}}m</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <br/>
+        <br/>
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title">All Models/Runs (Click to Select Run)</h3>
+                <table class="table" id="all-models">
+                    <thead>
+                        <tr>
+                            <th scope="col">Model Name</th>
+                            <th scope="col">Model Date</th>
+                            <th scope="col">Model Loss</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="model in models" :key="model.info_name" v-bind:id="model.info_name" v-on:click="select(model.info_name)">
+                            <td >{{ model.info_name }}</td>
+                            <td>{{ model.info_date }}</td>
+                            <td>{{ model.info_loss}}</td>
+
+                        </tr>
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
+        crossorigin="anonymous"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,6 +1,12 @@
-model_version: v4
+model_version: v5
 model_edit: 01
 model_run: A
-learning_rate: 0.008
+learning_rate: 0.01
 batch_size: 32
 epoch: 30
+conv1_filter: 8
+conv2_filter: 16
+conv1_kernal: 8
+conv2_kernal: 6
+fully_connected: 132
+load: False
