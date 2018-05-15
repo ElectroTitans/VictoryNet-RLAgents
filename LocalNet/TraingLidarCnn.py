@@ -18,7 +18,6 @@ from shutil import copyfile
 import os
 import datetime
 
-
 print("Loading Model Settings...")
 
 
@@ -55,7 +54,8 @@ task_key = datastore_client.key(kind, name)
 task = datastore.Entity(key=task_key)
 task['info_date']  = datetime.datetime.now()
 task['info_name']  = model_name
-task['info_status'] = "loading"
+task['info_desc']  = cfg['model_desc']
+task['info_status'] = "Loading Training Data"
 task['cfg_model_version']   = cfg['model_version']
 task['cfg_model_edit']      = cfg['model_edit']
 task['cfg_model_run']       = cfg['model_run']
@@ -112,26 +112,26 @@ train_set = get_training_data()
 
 task['info_training_length'] = len(train_set)
 datastore_client.put(task)
-print('Updated to GCP Datastore{}'.format(task.key))
 
 
-
-x1_train = train_set.drop(["X-Coord", "Y-Coord", "Heading"], axis=1)
 x2_train = train_set[["Heading"]]
 y_train = train_set[["X-Coord", "Y-Coord"]]
-x1_train = np.expand_dims(x1_train, axis=2)
+train_set.drop(["X-Coord", "Y-Coord", "Heading"], axis=1, inplace=True)
+x1_train = np.expand_dims(train_set, axis=2)
 
+print(x1_train.shape)
+print("Loading Testing Data...")
 test_set = get_testing_data()
 
 task['info_testing_length'] = len(test_set)
 datastore_client.put(task)
 print('Updated to GCP Datastore{}'.format(task.key))
 
-x1_test = test_set.drop(["X-Coord", "Y-Coord",  "Heading"], axis=1)
 x2_test = test_set[["Heading"]]
 y_test = test_set[["X-Coord", "Y-Coord"]]
-x1_test = np.expand_dims(x1_test, axis=2)
-              
+test_set.drop(["X-Coord", "Y-Coord",  "Heading"], axis=1, inplace=True)
+x1_test = np.expand_dims(test_set, axis=2)
+
 filepath = "./Graph/"+model_name+"/trained_model.hdf5"
 
 if cfg["load"] is True:
@@ -184,14 +184,20 @@ embedding_layer_names = [ 'lidar_conv1']
 
 
 class GCPDatastoreCheckpoint(keras.callbacks.Callback):
+    def on_train_begin(self, logs={}):
+        self.losses = []
+
     def on_epoch_end(self, epoch, logs={}):
+        self.losses.append(logs.get('loss'))
         task['info_epoch'] = epoch + 1
         task['info_status'] = "Training"
         task['info_progress'] = (epoch + 1) / cfg['epoch']
         task['info_loss'] = logs.get('loss')
         task['info_val_loss'] = logs.get('val_loss')
+        task['info_losses'] = self.losses
         datastore_client.put(task)
         print('Updated to GCP Datastore{}'.format(task.key))
+
 
 
 gcp_checkpoint = GCPDatastoreCheckpoint()
@@ -215,11 +221,6 @@ model.fit([x1_train, x2_train], y_train,
           validation_data=([x1_test, x2_test], y_test),
           callbacks=[gcp_checkpoint, checkpoint,tbCallBack])
 
-x1_train = []
-x2_train = []
-y_train = []
-
-
 
 score = model.evaluate([x1_test, x2_test], y_test, verbose=1)
 
@@ -227,4 +228,4 @@ print('Test loss:', score)
 task['info_status'] = "Complete"
 task['info_final_loss'] = score
 datastore_client.put(task)
-rint('Updated to GCP Datastore{}'.format(task.key))
+print('Updated to GCP Datastore{}'.format(task.key))
